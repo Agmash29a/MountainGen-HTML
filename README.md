@@ -15,3 +15,9 @@ This is a browser-only adaptation of [MountainGen-Web](https://github.com/Agmash
 - OBJ and PNG downloads work locally.
 
 No files in the original GitHub repository have been altered.
+
+## Extended subdivision and collapsible controls
+
+The subdivision selector accepts levels **2–14**. A full level-14 mesh would contain **268,435,456 triangles**, which cannot be drawn efficiently with this dependency-free Canvas 2D renderer. For requests above level 8, the app generates and exports a **level-8 preview (65,536 triangles)** and clearly reports the limit in the UI. Higher levels require a future adaptive or GPU renderer to resolve the requested detail fully.
+
+Use **Hide controls** / **Show controls** to retract or reopen the left sidebar, expanding the 3D viewport.
