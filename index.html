@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MountainGen — HTML Edition</title>
+<style>
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#233247;background:#f3f6fa;font-size:14px}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}header{height:62px;background:white;border-bottom:1px solid #dce3ea;display:flex;align-items:center;justify-content:space-between;padding:0 22px}header strong{font-size:24px;letter-spacing:-1px;color:#152a3d}header strong span{color:#1889ad}header small{margin-left:15px;color:#8794a3;font-weight:600;letter-spacing:1px}a{color:#197c9f;text-decoration:none}.layout{display:grid;grid-template-columns:294px minmax(0,1fr);height:calc(100vh - 62px)}aside{background:#fff;border-right:1px solid #dce3ea;overflow:auto;padding:21px 22px}h1{font-size:20px;margin:0 0 8px}p.note{color:#718096;font-size:12px;margin:0 0 20px;line-height:1.6}section{border-top:1px solid #e8eef3;padding:19px 0 7px}h2{font-size:12px;text-transform:uppercase;letter-spacing:1.25px;color:#72869b;margin:0 0 16px}.control{display:block;margin:13px 0}.control .label{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:12px;margin:0 0 8px}.control output{font-variant-numeric:tabular-nums;color:#1386a6}input[type=range]{width:100%;accent-color:#158db4}input[type=number],select{width:100%;border:1px solid #d7e0e9;border-radius:6px;padding:9px;color:#263950;background:#fff}.row{display:flex;gap:8px}.row>input{flex:1;min-width:0}.btn{border:1px solid #d6e0e9;border-radius:7px;background:white;color:#38536b;font-weight:650;padding:9px 13px}.btn:hover{background:#edf5f8}.primary{background:#148bb3;border-color:#148bb3;color:white;width:100%;padding:12px;margin-top:14px}.primary:hover{background:#08749b}.palette-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.palette-grid label{display:flex;align-items:center;gap:8px;font-size:12px;color:#657487}.palette-grid input{width:34px;height:32px;border:0;background:none;padding:0;cursor:pointer}.toggle{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;margin:13px 0}.toggle input{accent-color:#168db2}main{padding:18px 22px 16px;display:flex;flex-direction:column;min-height:0;min-width:0;gap:12px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px}.toolbar h1{font-size:18px;margin:0}.toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.viewport{min-height:260px;flex:1;position:relative;background:#0d1d2e;border-radius:11px;overflow:hidden;box-shadow:0 8px 28px #1e3a521a}canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}.hud{pointer-events:none;position:absolute;font-size:11px;letter-spacing:1px;color:#c2d3e0;left:18px;top:16px}.hud.right{left:auto;right:18px}.hint{top:auto;bottom:15px;letter-spacing:0;color:#a9bdcc}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{background:white;border:1px solid #e0e7ee;border-radius:8px;padding:13px 17px}.metric small{display:block;font-size:10px;letter-spacing:1px;color:#8494a4}.metric strong{display:block;margin-top:8px;font-size:24px;color:#21384b;font-variant-numeric:tabular-nums}.foot{font-size:11px;color:#8794a3;display:flex;justify-content:space-between}.status{font-size:11px;color:#668297}.muted{color:#7c91a0;font-size:11px}#error{color:#b63434;font-size:12px} @media(max-width:850px){.layout{height:auto;grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid #ddd;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}aside>h1,aside>p{grid-column:1/-1}main{height:80vh;min-height:580px}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:530px){aside{display:block}.toolbar{align-items:flex-start;flex-direction:column}.metric strong{font-size:19px}header small,.foot span:last-child{display:none}}
+</style></head><body>
+<header><div><strong>Mountain<span>Gen</span></strong><small>HTML EDITION · EST. 2002</small></div><a href="https://github.com/Agmash29a/MountainGen" target="_blank" rel="noopener">Original source ↗</a></header>
+<div class="layout"><aside><h1>Terrain generator</h1><p class="note">Fractal mountain landscapes, generated entirely in your browser.</p>
+<section><h2>01 · Generation</h2><label class="control"><span class="label">Subdivision detail <output id="detailLevelValue">4</output></span><input id="detailLevel" type="range" min="2" max="7" value="4"></label><small id="faceHint" class="muted">256 triangles</small><label class="control"><span class="label">Displacement / roughness <output id="roughnessValue">1.00</output></span><input id="roughness" type="range" min="0.2" max="2.5" step="0.05" value="1"></label><label class="control"><span class="label">Random seed</span><span class="row"><input id="seed" type="number" value="2002" min="-2147483648" max="2147483647"><button class="btn" id="randomize" title="Randomize seed">⤨</button></span></label><button id="generate" class="btn primary">✦ Generate landscape</button><p class="muted">Changes to generation settings take effect when you generate.</p></section>
+<section><h2>02 · Surface & colour</h2><label class="control"><span class="label">Colour palette</span><select id="preset"><option>Alpine</option><option>Original 2002</option><option>Desert</option><option>Ice world</option><option>Custom</option></select></label><div class="palette-grid"><label><input id="rock" type="color">Rock</label><label><input id="snow" type="color">Snow</label><label><input id="vegetation" type="color">Vegetation</label><label><input id="waterColor" type="color">Water</label></div><label class="control"><span class="label">Snowline <output id="snowLineValue">67%</output></span><input id="snowLine" type="range" min="20" max="95" value="67"></label></section>
+<section><h2>03 · Environment</h2><label class="control"><span class="label">Sun elevation <output id="sunElevationValue">55°</output></span><input id="sunElevation" type="range" min="5" max="90" value="55"></label><label class="control"><span class="label">Sun azimuth <output id="sunAzimuthValue">45°</output></span><input id="sunAzimuth" type="range" min="0" max="360" value="45"></label><label class="control"><span class="label">Ambient light (kadr) <output id="ambientFactorValue">0.75</output></span><input id="ambientFactor" type="range" min="0" max="2" step="0.05" value="0.75"></label><label class="toggle">Water <input id="waterEnabled" type="checkbox" checked></label><label class="control"><span class="label">Sea level <output id="waterLevelValue">0</output></span><input id="waterLevel" type="range" min="-90" max="120" step="5" value="0"></label><label class="toggle">Wireframe <input id="wireframe" type="checkbox"></label><label class="toggle">Coordinate axes <input id="axes" type="checkbox"></label></section><p class="muted">Based on the 2002 VB6 MountainGen and its later C# web adaptation.</p></aside>
+<main><div class="toolbar"><div><h1>Landscape explorer</h1><span id="status" class="status">Ready</span></div><div class="toolbar-actions"><button class="btn" id="resetView">Reset view</button><button class="btn" id="saveObj">↓ OBJ</button><button class="btn" id="savePng">↓ Save PNG</button></div></div><div class="viewport"><canvas id="mountainCanvas" aria-label="Interactive three-dimensional mountain landscape"></canvas><div class="hud">PERSPECTIVE VIEW</div><div class="hud right" id="polygonCount">256 POLYGONS</div><div class="hud hint">Drag: rotate · Wheel: zoom · Shift/right drag: pan</div></div><div id="error"></div><div class="metrics"><div class="metric"><small>TRIANGLES</small><strong id="triangleCount">—</strong></div><div class="metric"><small>VERTICES</small><strong id="vertexCount">—</strong></div><div class="metric"><small>PEAK ELEVATION</small><strong id="peakElevation">—</strong></div><div class="metric"><small>GENERATION TIME</small><strong id="generationTime">—</strong></div></div><div class="foot"><span>MOUNTAINGEN / VANILLA JAVASCRIPT</span><span>ORIGINAL ALGORITHM · 2002 → MODERN WEB</span></div></main></div>
+<script>
+'use strict';
+/*
+ * MountainGen HTML Edition
+ * A dependency-free reimplementation of MountainGen-Web's C# terrain generator
+ * and React/Three.js client. The source design originates from Riley T. Perry's
+ * Visual Basic 6 MountainGen (2002).
+ *
+ * Legacy names: MakeTriangle, Make_Sides and DivideLine (MODULE_Terrain.bas).
+ * Modern names: TerrainGenerator, TerrainRequest, TerrainResponse, makeTerrainGeometry.
+ *
+ * Unlike the VB6 rendering engine, this version draws projected triangles on
+ * HTML Canvas 2D. Back-to-front sorting substitutes for WebGL depth buffering.
+ */
+const $ = id => document.getElementById(id);
+const PRESETS = {
+  'Alpine': {rock:'#77838c',snow:'#f1f7f8',vegetation:'#4a9576',water:'#3380a7'},
+  'Original 2002': {rock:'#323232',snow:'#7d7d7d',vegetation:'#007d00',water:'#00007d'},
+  'Desert': {rock:'#cc8d60',snow:'#f4ddbb',vegetation:'#777f50',water:'#3379a2'},
+  'Ice world': {rock:'#5b728d',snow:'#eaf8ff',vegetation:'#80b4c4',water:'#3e87bd'}
+};
+let palette={...PRESETS.Alpine}, terrain=null, renderPending=false;
+const canvas=$('mountainCanvas'), ctx=canvas.getContext('2d',{alpha:false});
+const camera={azimuth:0.72,elevation:0.54,distance:2250,targetX:0,targetY:95,targetZ:0};
+
+// Stable seeded pseudorandom values; repeated generations with the same seed
+// and settings produce identical geometry. This is not System.Random's sequence.
+function makeRandom(seed){let state=(seed|0)>>>0;return ()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};}
+function hash01(x){let n=(x^(x>>>16))>>>0;n=Math.imul(n,0x7feb352d)>>>0;n^=n>>>15;n=Math.imul(n,0x846ca68b)>>>0;n^=n>>>16;return(n>>>0)/4294967296;}
+
+class TerrainGenerator {
+  Generate(request){
+    const {detailLevel,seed,roughness}=request;
+    if(!Number.isInteger(detailLevel)||detailLevel<2||detailLevel>7) throw Error('Detail must be from 2 to 7.');
+    if(!Number.isFinite(roughness)||roughness<0.2||roughness>2.5) throw Error('Roughness must be from 0.2 to 2.5.');
+    const start=performance.now(),random=makeRandom(seed);
+    // Same three starting corners as the original VB6 NewLandscape().
+    // Winding is chosen so normals point upward in modern 3D coordinates.
+    const points=[[-600,0,-600],[0,0,600],[600,0,-600]];
+    let faces=[[0,1,2]];
+    for(let depth=0;depth<detailLevel;depth++){
+      const edgeMidpoints=new Map(),subdivided=[];
+      // Early subdivisions create broad mountains; later ones add smaller detail.
+      const amplitude=230*Math.pow(0.51,depth)*roughness;
+      function DivideLine(a,b){
+        const lo=Math.min(a,b),hi=Math.max(a,b),key=`${lo}:${hi}`;
+        if(edgeMidpoints.has(key))return edgeMidpoints.get(key);
+        const first=points[a],second=points[b];
+        const centre=[(first[0]+second[0])/2,(first[1]+second[1])/2,(first[2]+second[2])/2];
+        // Original DivideLine() has a 2:1 bias toward upward displacement.
+        const sign=Math.floor(random()*3)===0?-1:1;
+        const movement=sign*(0.15+0.85*random())*amplitude;
+        centre[1]+=movement;
+        const index=points.length;points.push(centre);edgeMidpoints.set(key,index);
+        return index;
+      }
+      function Make_Sides(a,b,c){return [DivideLine(a,b),DivideLine(b,c),DivideLine(c,a)];}
+      function MakeTriangle(a,b,c){
+        const [ab,bc,ca]=Make_Sides(a,b,c);
+        // Four congruent children, preserving triangle winding.
+        subdivided.push([a,ab,ca],[ab,b,bc],[ca,bc,c],[ab,bc,ca]);
+      }
+      for(const [a,b,c] of faces)MakeTriangle(a,b,c);
+      faces=subdivided;
+    }
+    const vertices=new Float32Array(points.length*3),indices=new Uint32Array(faces.length*3);
+    let minHeight=Infinity,maxHeight=-Infinity;
+    points.forEach(([x,y,z],i)=>{vertices.set([x,y,z],i*3);minHeight=Math.min(minHeight,y);maxHeight=Math.max(maxHeight,y);});
+    faces.forEach((face,i)=>indices.set(face,i*3));
+    return {vertices,indices,triangleCount:faces.length,minHeight,maxHeight,seed,detailLevel,generationMilliseconds:performance.now()-start};
+  }
+}
+const generator=new TerrainGenerator();
+const clamp=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
+const rad=Math.PI/180;
+function hexRgb(hex){return [1,3,5].map(i=>parseInt(hex.substring(i,i+2),16));}
+function cssColor(rgb,brightness=1){return `rgb(${rgb.map(c=>Math.round(clamp(c*brightness,0,255))).join(',')})`;}
+function cross(ax,ay,az,bx,by,bz){return [ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx];}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
+function normalize(a){const m=Math.hypot(...a)||1;return a.map(v=>v/m);}
+
+// Camera orientation and perspective projection use no WebGL dependency.
+function cameraTransform(x,y,z){
+  x-=camera.targetX;y-=camera.targetY;z-=camera.targetZ;
+  const ca=Math.cos(camera.azimuth),sa=Math.sin(camera.azimuth);
+  const ce=Math.cos(camera.elevation),se=Math.sin(camera.elevation);
+  const right=x*ca-z*sa,forward=x*sa+z*ca;
+  return [right,y*ce-forward*se,camera.distance-(forward*ce+y*se)];
+}
+function project(p,width,height){
+  const focal=Math.min(width*1.45,height*2.3);
+  return [width/2+p[0]*focal/p[2],height/2-p[1]*focal/p[2]];
+}
+
+// makeTerrainGeometry follows terrain.ts: rock, snow and vegetation zoning
+// is determined independently for each triangle, using its height and normal.
+function makeTerrainGeometry(terrain){
+  const faces=[],v=terrain.vertices,idx=terrain.indices,heightRange=Math.max(1,terrain.maxHeight);
+  const snowLine=+$('snowLine').value/100,az=+$('sunAzimuth').value*rad,el=+$('sunElevation').value*rad;
+  const sun=normalize([Math.cos(el)*Math.cos(az),Math.sin(el),Math.cos(el)*Math.sin(az)]);
+  const ambient=+$('ambientFactor').value;
+  for(let t=0;t<idx.length;t+=3){
+    const ia=idx[t]*3,ib=idx[t+1]*3,ic=idx[t+2]*3;
+    const a=[v[ia],v[ia+1],v[ia+2]],b=[v[ib],v[ib+1],v[ib+2]],c=[v[ic],v[ic+1],v[ic+2]];
+    const u=b.map((n,i)=>n-a[i]),w=c.map((n,i)=>n-a[i]);
+    const normal=normalize(cross(...u,...w));
+    // Use absolute normal for robust lighting if a viewing engine flips winding.
+    if(normal[1]<0)normal.forEach((n,i)=>normal[i]=-n);
+    const upness=Math.max(0,normal[1]),height=Math.max(a[1],b[1],c[1]);
+    const relativeHeight=height/heightRange,chance=hash01((t/3)*113+terrain.seed);
+    let colour=palette.rock;
+    if(relativeHeight>=snowLine)colour=palette.snow;
+    else if(height>0&&upness>0.54&&relativeHeight<0.53&&chance<Math.max(0.13,(0.8-relativeHeight)*upness))colour=palette.vegetation;
+    // Slight rock variation makes individual facets visible without textures.
+    const variance=colour===palette.rock?0.88+hash01((t/3)*53+terrain.seed)*0.24:1;
+    const illumination=clamp(0.22+ambient*0.42+Math.max(0,dot(normal,sun))*0.78,0.09,1.85);
+    faces.push({a,b,c,color:cssColor(hexRgb(colour),variance*illumination)});
+  }
+  return faces;
+}
+function drawLine(a,b,color,width,height){const p=project(cameraTransform(...a),width,height),q=project(cameraTransform(...b),width,height);ctx.strokeStyle=color;ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(...p);ctx.lineTo(...q);ctx.stroke();}
+function render(){
+  renderPending=false;if(!terrain)return;
+  const width=canvas.clientWidth,height=canvas.clientHeight,dpr=Math.min(window.devicePixelRatio||1,2);
+  const pixelWidth=Math.round(width*dpr),pixelHeight=Math.round(height*dpr);
+  if(canvas.width!==pixelWidth||canvas.height!==pixelHeight){canvas.width=pixelWidth;canvas.height=pixelHeight;}
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#0d1d2e';ctx.fillRect(0,0,width,height);
+  const wireframe=$('wireframe').checked;
+  const faceList=makeTerrainGeometry(terrain);
+  // Painter's algorithm: draw furthest projected triangles first.
+  // Water is intentionally part of the depth-sorted scene, not an overlay.
+  if($('waterEnabled').checked){
+    const y=+$('waterLevel').value+0.15;
+    faceList.push({a:[-600,y,-600],b:[0,y,600],c:[600,y,-600],color:cssColor(hexRgb(palette.water),0.87),water:true});
+  }
+  const projected=[];
+  for(const face of faceList){
+    const a=cameraTransform(...face.a),b=cameraTransform(...face.b),c=cameraTransform(...face.c);
+    if(Math.min(a[2],b[2],c[2])<=5)continue;
+    projected.push({points:[project(a,width,height),project(b,width,height),project(c,width,height)],depth:(a[2]+b[2]+c[2])/3,color:face.color,water:face.water});
+  }
+  projected.sort((a,b)=>b.depth-a.depth);
+  for(const face of projected){
+    const p=face.points;ctx.beginPath();ctx.moveTo(...p[0]);ctx.lineTo(...p[1]);ctx.lineTo(...p[2]);ctx.closePath();
+    if(!wireframe||face.water){ctx.fillStyle=face.color;ctx.fill();}
+    if(wireframe&&!face.water){ctx.strokeStyle='#9dd7e1';ctx.lineWidth=0.7;ctx.stroke();}
+    else if(!face.water){ctx.strokeStyle=face.color;ctx.lineWidth=0.55;ctx.stroke();}
+  }
+  if($('axes').checked){drawLine([-750,0,0],[750,0,0],'#4a9af0',width,height);drawLine([0,-200,0],[0,850,0],'#f77483',width,height);drawLine([0,0,-750],[0,0,750],'#69df9c',width,height);}
+}
+function requestRender(){if(!renderPending){renderPending=true;requestAnimationFrame(render);}}
+function generate(){try{
+  const seed=+$('seed').value|0;
+  const request={detailLevel:+$('detailLevel').value,roughness:+$('roughness').value,seed};
+  terrain=generator.Generate(request);$('error').textContent='';
+  $('triangleCount').textContent=terrain.triangleCount.toLocaleString();
+  $('vertexCount').textContent=(terrain.vertices.length/3).toLocaleString();
+  $('peakElevation').textContent=Math.round(terrain.maxHeight)+' u';
+  $('generationTime').textContent=terrain.generationMilliseconds.toFixed(1)+' ms';
+  $('polygonCount').textContent=terrain.triangleCount.toLocaleString()+' POLYGONS';
+  $('status').textContent=`Seed ${seed} · ${terrain.triangleCount.toLocaleString()} faces · locally generated`;
+  requestRender();
+}catch(error){$('error').textContent=error.message;}}
+function choosePreset(name){if(!PRESETS[name])return;palette={...PRESETS[name]};for(const key of ['rock','snow','vegetation'])$(key).value=palette[key];$('waterColor').value=palette.water;requestRender();}
+function toObj(terrain){
+  const lines=['# MountainGen HTML terrain generated in the browser',`# seed=${terrain.seed} detail=${terrain.detailLevel} faces=${terrain.triangleCount}`,'o MountainGen'];
+  for(let i=0;i<terrain.vertices.length;i+=3)lines.push(`v ${terrain.vertices[i]} ${terrain.vertices[i+1]} ${terrain.vertices[i+2]}`);
+  for(let i=0;i<terrain.indices.length;i+=3)lines.push(`f ${terrain.indices[i]+1} ${terrain.indices[i+1]+1} ${terrain.indices[i+2]+1}`);
+  return lines.join('\n')+'\n';
+}
+function downloadText(filename,content,mime){const url=URL.createObjectURL(new Blob([content],{type:mime}));download(url,filename);setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function download(url,filename){const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();}
+$('generate').addEventListener('click',generate);
+$('randomize').addEventListener('click',()=>{$('seed').value=Math.floor(Math.random()*2147483647);generate();});
+$('preset').addEventListener('change',event=>choosePreset(event.target.value));
+for(const key of ['rock','snow','vegetation','waterColor'])$(key).addEventListener('input',event=>{palette[key==='waterColor'?'water':key]=event.target.value;$('preset').value='Custom';requestRender();});
+for(const id of ['detailLevel','roughness','snowLine','sunElevation','sunAzimuth','ambientFactor','waterLevel']){
+  $(id).addEventListener('input',()=>{
+    const value=+$(id).value,unit=['snowLine'].includes(id)?'%':['sunElevation','sunAzimuth'].includes(id)?'°':'';
+    $(id+'Value').textContent=(id==='roughness'||id==='ambientFactor'?value.toFixed(2):value)+unit;
+    if(id==='detailLevel')$('faceHint').textContent=(4**value).toLocaleString()+' triangles';
+    if(!['detailLevel','roughness'].includes(id))requestRender();
+  });
+}
+for(const id of ['waterEnabled','wireframe','axes'])$(id).addEventListener('change',requestRender);
+$('resetView').addEventListener('click',()=>{Object.assign(camera,{azimuth:0.72,elevation:0.54,distance:2250,targetX:0,targetY:95,targetZ:0});requestRender();});
+$('savePng').addEventListener('click',()=>{if(terrain){render();download(canvas.toDataURL('image/png'),`mountaingen-${terrain.seed}.png`);}});
+$('saveObj').addEventListener('click',()=>{if(terrain)downloadText(`mountaingen-${terrain.seed}.obj`,toObj(terrain),'text/plain');});
+let drag=null;
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,pan:e.button===2||e.shiftKey};canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointerup',()=>drag=null);
+canvas.addEventListener('pointercancel',()=>drag=null);
+canvas.addEventListener('pointermove',e=>{if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+  if(drag.pan){const scale=camera.distance/1250;camera.targetX-=dx*scale;camera.targetY+=dy*scale;}
+  else{camera.azimuth+=dx*0.006;camera.elevation=clamp(camera.elevation+dy*0.006,0.10,1.48);}
+  requestRender();
+});
+canvas.addEventListener('wheel',e=>{e.preventDefault();camera.distance=clamp(camera.distance*Math.exp(e.deltaY*0.001),400,6000);requestRender();},{passive:false});
+window.addEventListener('resize',requestRender);
+choosePreset('Alpine');generate();
+</script></body></html>
